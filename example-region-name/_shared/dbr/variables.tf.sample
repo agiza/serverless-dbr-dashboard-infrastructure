@@ -1,0 +1,50 @@
+variable "region" {}
+variable "region_name" {}
+variable "author" {}
+variable "department" {}
+variable "env" {}
+variable "alias" {}
+variable "role" {}
+variable "backend_bucket_name" {}
+variable "backend_key_tf_state" {}
+variable "backend_dynamodb_table" {}
+
+variable "athena_output_results_bucket_name" {
+  default = "athena-results"
+}
+
+variable "dynamodb_metrics_table_name" {
+  default = "metrics"
+}
+
+variable "athena_db_name" {
+  default = "dbr_billing"
+}
+
+variable "athena_table_name" {
+  default = "dbr_analyzer"
+}
+
+variable "billing_aws_reports_bucket_name" {
+  default = "billings-report"
+}
+
+variable "billing_aws_parquet_reports_bucket_name" {
+  default = "billings-parquet-report"
+}
+
+variable "lambda_dbr_function_name" {
+  default = "billing-analyzer"
+}
+
+variable "lambda_parquet_role_name" {
+  default = "parquet-lambda"
+}
+
+variable "lambda_parquet_function_name" {
+  default = "parquet-parser"
+}
+
+variable "firehose_dbr_name" {
+  default = "billing-parquet"
+}

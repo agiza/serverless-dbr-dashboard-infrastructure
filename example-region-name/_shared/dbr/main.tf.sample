@@ -1,0 +1,70 @@
+locals = {
+  # STANDARD PREFIX FOR RESOURCES
+  f360_env_dbr = "${var.alias}-${var.role}-${var.env}"
+
+  athena_output_results_bucket_name       = "${local.f360_env_dbr}-${var.athena_output_results_bucket_name}"
+  dynamodb_metrics_table_name             = "${local.f360_env_dbr}-${var.dynamodb_metrics_table_name}"
+  athena_db_name                          = "${var.athena_db_name}"
+  athena_table_name                       = "${var.athena_table_name}"
+  athena_table_query                      = "${local.athena_table_name}_table_query"
+  billing_aws_reports_bucket_name         = "${local.f360_env_dbr}-${var.billing_aws_reports_bucket_name}"
+  billing_aws_parquet_reports_bucket_name = "${local.f360_env_dbr}-${var.billing_aws_parquet_reports_bucket_name}"
+  lambda_dbr_function_name                = "${local.f360_env_dbr}-${var.lambda_dbr_function_name}"
+  lambda_parquet_function_name            = "${local.f360_env_dbr}-${var.lambda_parquet_function_name}"
+  firehose_dbr_name                       = "${local.f360_env_dbr}-${var.firehose_dbr_name}"
+
+  # AWS recommend always tag your results
+  common_tags = {
+    Terraform   = true
+    Author      = "${var.author}"
+    Department  = "${var.department}"
+    Alias       = "${var.alias}"
+    Environment = "${var.env}"
+    Role        = "${var.role}"
+  }
+}
+
+#--------------------------------------------------------------
+# S3 Backend configuration
+#--------------------------------------------------------------
+#In case your going to use terraform backend you can use something like this
+terraform {
+  backend "s3" {
+    bucket               = "${var.backend_bucket_name}"
+    key                  = "${var.backend_key_tf_state}"
+    workspace_key_prefix = ""
+    region               = "${var.backend_region}"
+    dynamodb_table       = "${var.backend_dynamodb_table}"
+    encrypt              = true
+  }
+}
+
+#--------------------------------------------------------------
+# Environment validation
+#--------------------------------------------------------------
+# We recommend use terraform workspaces
+resource "null_resource" "env_validation" {
+  count                                             = "${var.env == terraform.workspace ? 0 : 1}"
+  "ERROR: Workspace does not match given env name!" = true
+}
+
+#--------------------------------------------------------------
+# DBR Module
+#--------------------------------------------------------------
+module "dbr" {
+  source = "full360/DBR"
+
+  common_tags                             = "${local.common_tags}"
+  region                                  = "${var.region}"
+  f360_env_dbr                            = "${local.f360_env_dbr}"
+  athena_output_results_bucket_name       = "${local.athena_output_results_bucket_name}"
+  dynamodb_metrics_table_name             = "${local.dynamodb_metrics_table_name}"
+  athena_db_name                          = "${local.athena_db_name}"
+  athena_table_name                       = "${local.athena_table_name}"
+  athena_table_query                      = "${local.athena_table_query}"
+  billing_aws_reports_bucket_name         = "${local.billing_aws_reports_bucket_name}"
+  billing_aws_parquet_reports_bucket_name = "${local.billing_aws_parquet_reports_bucket_name}"
+  lambda_dbr_function_name                = "${local.lambda_dbr_function_name}"
+  lambda_parquet_function_name            = "${local.lambda_parquet_function_name}"
+  firehose_dbr_name                       = "${local.firehose_dbr_name}"
+}

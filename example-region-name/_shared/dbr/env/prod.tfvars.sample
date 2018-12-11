@@ -1,0 +1,14 @@
+#--------------------------------------------------------------
+# Variables
+#--------------------------------------------------------------
+region = "us-west-2"
+region_name = "oregon"
+author = "full360"
+department = "global"
+env = "prod"
+alias = "full360"
+role = "dbr"
+backend_bucket_name = "example-bucket-name"
+backend_key_tf_state = "us_west/dbr/terraform.tfstate"
+backend_region = "us-east-1"
+backend_dynamodb_table = "tf-full360-state-lock"
