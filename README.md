@@ -1,6 +1,6 @@
 # DBR Infrastructure
 
-This component exist to manage all infrastructure resources related to DBR Lambda
+This component exist to manage all infrastructure resources related to [DBR Lambda](https://github.com/full360/serverless-dbr-dashboard)
 
 **Note:** Resources here are mono-environment.
 
@@ -16,17 +16,18 @@ This component exist to manage all infrastructure resources related to DBR Lambd
 
 ## Setup
 
-**Terraform is required, must be installed, and credentials for the
+**[Terraform](https://www.terraform.io/) and [CURL](https://curl.haxx.se/) are required, must be installed, and credentials for the
 AWS account must be setup before continuing.**
 
 Setup the DBR module
 
 ```
 module "dbr" {
-  source = "github.comfull360/DBR"
+  source = "git::https://git@github.com/full360/serverless-dbr-dashboard-infrastructure.git?ref=master//modules/dbr"
 
   region                          = "${var.region}"
   billing_aws_reports_bucket_name = "bucket-name-where-report-files-are"
+  lambda_version                  = "0.1.1"
 }
 
 ```
@@ -71,7 +72,7 @@ Now that we have our terraform initialized we are ready to continue an plan our 
 
     terraform plan
 
-The output of this should say that there are **Plan: 29 to add, 0 to change, 0 to destroy.** to apply. If that's
+The output of this should say that there are **Plan: 30 to add, 0 to change, 0 to destroy.** to apply. If that's
 the case you are done.
 
 Now you are ready to apply them (remember to always plan fist) use the following command:
