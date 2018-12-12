@@ -67,4 +67,5 @@ module "dbr" {
   lambda_dbr_function_name                = "${local.lambda_dbr_function_name}"
   lambda_parquet_function_name            = "${local.lambda_parquet_function_name}"
   firehose_dbr_name                       = "${local.firehose_dbr_name}"
+  lambda_version                          = "${var.lambda_version}"
 }
