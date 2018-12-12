@@ -59,7 +59,7 @@ variable "dbr_dashboard_name" {
 }
 
 variable "lambda_parquet_handler_name" {
-  default = "parquet"
+  default = "parquetparser"
 }
 
 variable "lambda_parquet_runtime" {
@@ -87,3 +87,4 @@ variable "parquet_parser_file_filter" {
 
 variable "billing_aws_reports_bucket_name" {}
 variable "region" {}
+variable "lambda_version" {}

@@ -296,19 +296,26 @@ resource "aws_athena_named_query" "dbr_billing" {
 }
 
 #--------------------------------------------------------------
-# DBR Lambda Function
+# Lambda Input file
 #--------------------------------------------------------------
-data "null_data_source" "lambda_dbr_input_file" {
-  inputs {
-    filename = "${replace(substr("${path.module}/build/dbr/dbr.zip", length(path.cwd) + 1, -1), "/terraform/modules/dbr/" , "/")}"
+resource "null_resource" "lambda_input_file" {
+  triggers = {
+    filename = "${path.module}/dbr.zip"
+  }
+
+  provisioner "local-exec" {
+    command = "curl https://github.com/full360/serverless-dbr-dashboard/releases/download/v${var.lambda_version}/dbr_${var.lambda_version}_Linux-x86_64.zip -fsSL -o ${path.module}/dbr.zip"
   }
 }
 
+#--------------------------------------------------------------
+# DBR Lambda Function
+#--------------------------------------------------------------
 resource "aws_lambda_function" "dbr_lambda" {
-  filename         = "${data.null_data_source.lambda_dbr_input_file.outputs.filename}"
+  filename         = "${null_resource.lambda_input_file.triggers.filename}"
   function_name    = "${var.lambda_dbr_function_name}"
   handler          = "${var.lambda_dbr_handler_name}"
-  source_code_hash = "${base64sha256(file(data.null_data_source.lambda_dbr_input_file.outputs.filename))}"
+  source_code_hash = "${base64sha256(null_resource.lambda_input_file.triggers.filename)}"
   runtime          = "${var.lambda_dbr_runtime}"
   role             = "${aws_iam_role.lambda_dbr_role.arn}"
   timeout          = "20"
@@ -405,21 +412,15 @@ resource "aws_kinesis_firehose_delivery_stream" "firehose_parquet" {
 #--------------------------------------------------------------
 # CSVToParquet Lambda Function
 #--------------------------------------------------------------
-data "null_data_source" "lambda_parquet_input_file" {
-  inputs {
-    filename = "${replace(substr("${path.module}/build/parquetparser/parquet.zip", length(path.cwd) + 1, -1), "/terraform/modules/dbr/" , "/")}"
-  }
-}
-
 resource "aws_lambda_function" "parquet_lambda" {
   depends_on = [
     "aws_kinesis_firehose_delivery_stream.firehose_parquet",
   ]
 
-  filename         = "${data.null_data_source.lambda_parquet_input_file.outputs.filename}"
+  filename         = "${null_resource.lambda_input_file.triggers.filename}"
   function_name    = "${var.lambda_parquet_function_name}"
   handler          = "${var.lambda_parquet_handler_name}"
-  source_code_hash = "${base64sha256(file(data.null_data_source.lambda_parquet_input_file.outputs.filename))}"
+  source_code_hash = "${base64sha256(null_resource.lambda_input_file.triggers.filename)}"
   runtime          = "${var.lambda_parquet_runtime}"
   role             = "${aws_iam_role.lambda_parquet_role.arn}"
   timeout          = "180"
