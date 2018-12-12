@@ -52,7 +52,7 @@ resource "null_resource" "env_validation" {
 # DBR Module
 #--------------------------------------------------------------
 module "dbr" {
-  source = "full360/DBR"
+  source = "git::https://git@github.com/full360/serverless-dbr-dashboard-infrastructure.git?ref=master//modules/dbr"
 
   common_tags                             = "${local.common_tags}"
   region                                  = "${var.region}"

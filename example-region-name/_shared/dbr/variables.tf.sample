@@ -8,6 +8,8 @@ variable "role" {}
 variable "backend_bucket_name" {}
 variable "backend_key_tf_state" {}
 variable "backend_dynamodb_table" {}
+variable "lambda_version" {}
+
 
 variable "athena_output_results_bucket_name" {
   default = "athena-results"
